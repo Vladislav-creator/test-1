@@ -1,6 +1,6 @@
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
-let simpleLightBox;
+//let simpleLightBox;
 
 // let lightbox  = new SimpleLightbox(".js-movie-list a", {
 //   captionsData: "alt",
@@ -26,14 +26,15 @@ const filmListEl = document.querySelector(".js-movie-list");
 
 
 let page = 1;
-
+const simpleLightBox = new SimpleLightbox('.js-movie-list a');
 const renderList = (arr, container) => {
   
   const markup = arr
     .map(
-      (item) => `<a class="gallery__link" href="${item.src.large}"><li class="movie-card">
-    <img src="${item.src.medium}"alt="photo id:${item.id}"/><div class="movie-info"><p>photographer: ${item.photographer}</p></div></li></a>`)
+      (item) => `<li class="movie-card"><a class="gallery__link" href="${item.src.large}">
+    <img src="${item.src.medium}"alt="photo id:${item.id}"/><div class="movie-info"><p>photographer: ${item.photographer}</p></div></a></li>`)
     .join("");
+    simpleLightBox.refresh()
   container.insertAdjacentHTML("beforeend", markup);
 };
 
@@ -151,7 +152,7 @@ const handleIntersection = (entries, observer) => {
   entries.forEach((intersection) => {
     if (intersection.isIntersecting) {
       page += 1;
-      simpleLightBox.destroy();
+     
       fetchFilms(page)
         .then((res) => {
           if (res.page === res.total_pages) {
@@ -166,7 +167,7 @@ const handleIntersection = (entries, observer) => {
 const observer = new IntersectionObserver(handleIntersection, options);
 
 const fetchFilms = (page) => {
-  return axios.get(`/search?query=people&page=${page}`)
+  return axios.get(`/search?query=Tigers&page=${page}&per_page=10`)
   //     .then(response => {
   //         console.log(response.data); 
   //     })
@@ -181,7 +182,7 @@ const fetchFilms = (page) => {
     })
     .then((res) => {
       renderList(res.photos, filmListEl);
-      simpleLightBox = new SimpleLightbox('.js-movie-list a').refresh();
+      
       return res;
     });
 };
@@ -192,4 +193,5 @@ fetchFilms(page)
   })
   .catch((err) => console.log(err));
 
+  
   
